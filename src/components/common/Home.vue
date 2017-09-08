@@ -18,7 +18,7 @@
                     (vm) => {
                         const inner = new WebSocket("ws://127.0.0.1:8081/socket/")
                         inner.onmessage = (e) => {
-                            vm.$children[2].tableData.push(e.data)
+                            vm.$children[2].tableData.push(JSON.parse(e.data))
                         }
                         return inner
                     }

@@ -7,10 +7,10 @@
             </el-breadcrumb>
         </div>
         <el-row>
-          <el-col :span="5" v-for="(item, index) in tableData" :key="item.name" :offset="index % 4 > 0 ? 1 : 0">
+          <el-col :span="5" v-for="(order, index) in tableData" :key="index" :offset="index % 4 > 0 ? 1 : 0">
             <el-card class="box-card">
               <div slot="header" class="clearfix">
-                <span style="line-height: 36px;">{{ item.name }}</span>
+                <span style="line-height: 36px;">桌号：{{ order.tableNo }}</span>
                 <!-- <el-button style="float: right;" type="primary" @click="onTest">操作按钮</el-button> -->
                 <el-dropdown style="float: right;" >
                   <el-button type="primary">
@@ -23,8 +23,8 @@
                   </el-dropdown-menu>
                 </el-dropdown>
               </div>
-              <div class="text item">
-                {{ item.address }}
+              <div class="text item" v-for="(item, index) in order.items">
+                {{ item.name+ " " + changeLabel('ice', item.temperature) + " " + changeLabel('sweet', item.sweetness) }}
               </div>
             </el-card>
           </el-col>
@@ -38,6 +38,8 @@
             return {
                 url: './static/orders.json',
                 tableData: [],
+                iceDict: [],
+                sweetDict: [],
                 currentDate: new Date()
             }
         },
@@ -47,6 +49,17 @@
         methods: {
             getData(){
                 let self = this;
+                self.iceDict['more'] = '多冰'
+                self.iceDict['less'] = '少冰'
+                self.iceDict['none'] = '去冰'
+                self.iceDict['regular'] = '常温'
+                self.iceDict['hot'] = '热'
+
+                self.sweetDict['more'] = '多糖'
+                self.sweetDict['less'] = '微糖'
+                self.sweetDict['none'] = '无糖'
+                self.sweetDict['regular'] = '正常'
+                self.sweetDict['half'] = '半糖'
                 self.$axios.get(self.url, {page:self.cur_page}).then((res) => {
                     self.tableData = res.data.list;
                 })
@@ -59,10 +72,20 @@
                 switch(method){
                     case 1:
                         console.log("completed")
+                        console.log(this.tableData[index])
                         break;
                     case 2:
                         this.tableData.splice(index,1)
                         break;
+                }
+            },
+            changeLabel(type, key) {
+                switch(type){
+                    case 'ice':
+                        return this.iceDict[key]
+                        break
+                    default :
+                        return this.sweetDict[key]
                 }
             }
         }
